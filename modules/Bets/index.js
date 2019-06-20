@@ -51,7 +51,7 @@ module.exports = {
       switch(message.arguments[0]) {
         case 'open': // !betting open
           if (bet === null) {
-            bet = {
+            jaffamod.store[`${message.userstate['room-id']}-bet`] = bet = {
               question: message.arguments[1],
               options: message.arguments.slice(2),
               closed: false,
@@ -69,7 +69,7 @@ module.exports = {
           break;
         case 'close': // !betting close
           if (bet !== null) {
-            bet.closed = true;
+            jaffamod.store[`${message.userstate['room-id']}-bet`].closed = true;
             reply(`.me Betting closed!`);
           } else {
             reply(`No bet set!`);
@@ -81,9 +81,8 @@ module.exports = {
             if (answerArguments.length === 1) { // Simple value
               if (bet.options.length) {
                 if (bet.options.includes(answerArguments[0])) {
-                  bet.answer = answerArguments[0];
 
-                  let winners = await jaffamod.db.models.Bet.find({option: bet.answer}).exec();
+                  let winners = await jaffamod.db.models.Bet.find({option: answerArguments[0]}).exec();
                   let pool = await jaffamod.db.models.Bet.aggregate([
                     {
                       $group:

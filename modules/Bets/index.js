@@ -82,7 +82,7 @@ module.exports = {
           break;
         case 'answer': // !betting answer
           if (bet !== null && bet.closed) {
-            let answerArguments = message.arguments.slice(2);
+            let answerArguments = message.arguments.slice(1);
             if (answerArguments.length === 1) { // Simple value
               if (bet.options.length) {
                 if (bet.options.includes(answerArguments[0])) {

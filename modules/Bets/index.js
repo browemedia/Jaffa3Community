@@ -6,10 +6,10 @@ module.exports = {
     jaffamod.registerCommand('bet', async (message, reply, discord) => {
       jaffamod.client.deletemessage(message.channel, message.userstate['id']).catch(console.error); // Delete their message
       if (message.arguments.length === 2) {
-        let bet = jaffamod.store[`${message.userstate['room-id']}-bet`];
+        let bet = jaffamod.store[`${message.userstate['room-id']}-bet`] || null;
         if (bet !== null && !bet.closed) {
           if (bet.options && !bet.options.includes(message.arguments[0])) {
-            // TODO: Give a help message
+            reply(`.me @${message.userstate.username} Please choose one of the options: ${bet.options.join(', ')}`);
             return;
           }
           if (isNaN(message.arguments[1])) {
@@ -23,7 +23,7 @@ module.exports = {
           if (user === null) return;
 
           if (user.points < amount) {
-            // TODO: Not enough
+            reply(`.me @${message.userstate.username} Not enough funds`);
             return;
           }
 
@@ -39,14 +39,19 @@ module.exports = {
           await betDocument.save();
         }
       } else {
-        reply(`.me @${message.userstate.username} To bet: !bet ${bet.options.length ? '<option>' : '<guess>'} <amount>`)
+        let bet = jaffamod.store[`${message.userstate['room-id']}-bet`] || null;
+        if (bet !== null && !bet.closed) {
+          reply(`.me @${message.userstate.username} To bet: !bet ${bet.options.length ? '<option>' : '<guess>'} <amount>`)
+        } else {
+          // Bets not open - reduce spam esp. just after a close people will still try to bet.
+        }
       }
     });
 
     jaffamod.registerCommand('betting', async (message, reply, discord) => {
       if (!jaffamod.determineModerator(message, discord)) return;
 
-      let bet = jaffamod.store[`${message.userstate['room-id']}-bet`];
+      let bet = jaffamod.store[`${message.userstate['room-id']}-bet`] || null;
 
       switch(message.arguments[0]) {
         case 'open': // !betting open
@@ -99,6 +104,7 @@ module.exports = {
                   reply(`Awarded ${poolEach} to ${res.nModified} winners!`);
 
                   jaffamod.db.models.Bet.deleteMany({}).exec(); // Cleanup
+                  jaffamod.store[`${message.userstate['room-id']}-bet`] = null; // Cleanup
                 } else {
                   reply(`Please choose one of the options: ${bet.options.join(', ')}`);
                 }

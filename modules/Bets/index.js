@@ -110,7 +110,7 @@ module.exports = {
       if (message.arguments.length === 2) {
         let bet = jaffamod.store[`${message.userstate['room-id']}-bet`] || null;
         if (bet !== null && !bet.closed) {
-          if (bet.options && !bet.options.includes(message.arguments[0])) {
+          if (bet.options.length && !bet.options.includes(message.arguments[0])) {
             reply(`.me @${message.userstate.username} Please choose one of the options: ${bet.options.join(', ')}`);
             return;
           }

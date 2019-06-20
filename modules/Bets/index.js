@@ -13,7 +13,7 @@ module.exports = {
             return;
           }
           if (isNaN(message.arguments[1])) {
-            reply(`.me @${message.userstate['user-id']} Your bet amount has to be a number`);
+            reply(`.me @${message.userstate.username} Your bet amount has to be a number`);
             return;
           }
 
@@ -39,7 +39,7 @@ module.exports = {
           await betDocument.save();
         }
       } else {
-        reply(`.me @${message.userstate['user-id']} To bet: !bet <option> <guess> <amount>`)
+        reply(`.me @${message.userstate.username} To bet: !bet ${bet.options.length ? '<option>' : '<guess>'} <amount>`)
       }
     });
 

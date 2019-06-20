@@ -93,14 +93,14 @@ module.exports = {
                       $group:
                         {
                           _id: null,
-                          amount: { $sum: 1 }
+                          amount: { $sum: "$amount" }
                         }
                     }
                   ]).exec();
 
                   let poolEach = Math.round(pool[0].amount / winners.length);
 
-                  let res = await jaffamod.db.models.User.updateMany({_id: {$in: winners.map(i => i._id)} }, {$inc: {points: poolEach}}).exec();
+                  let res = await jaffamod.db.models.User.updateMany({_id: {$in: winners.map(i => i.user_id)} }, {$inc: {points: poolEach}}).exec();
                   reply(`Awarded ${poolEach} to ${res.nModified} winners!`);
 
                   jaffamod.db.models.Bet.deleteMany({}).exec(); // Cleanup

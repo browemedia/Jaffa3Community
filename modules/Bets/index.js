@@ -88,7 +88,7 @@ module.exports = {
             bulk.push({
               updateOne: {
                 filter: {_id: winner._id},
-                update: {$set:{}, $inc: {points: Math.round(winner.winnings)}}
+                update: {$set:{won_a_bet: true}, $inc: {points: Math.round(winner.winnings)}}
               }
             })
           }
